@@ -1,0 +1,14 @@
+torch>=2.0.0
+torchaudio>=2.0.0
+numpy
+Pillow>=9.0.0
+openai>=1.0.0
+requests
+
+# 以下为可选依赖，默认不随 requirements.txt 安装（避免 Windows/Python3.13 编译失败）。
+# audiocraft 仅「无极音乐人」节点生成音频时需要；缺失时该节点安全返回静音，不导致 ComfyUI 崩溃。
+# transformers 为部分后端可选依赖，非必需。
+# 如需使用，请单独安装（建议 Python 3.10/3.11 环境）：
+#   pip install audiocraft transformers
+# audiocraft
+# transformers
