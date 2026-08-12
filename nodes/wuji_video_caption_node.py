@@ -217,7 +217,7 @@ def _normalize_image_input(image_input):
 # ---------------------------------------------------------------
 
 class WujiVideoCaption:
-    CATEGORY = "无极 Wuji/反推"
+    CATEGORY = "提示词工坊 PromptWorkshop/反推"
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("反推提示词",)
     FUNCTION = "reverse"
