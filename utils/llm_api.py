@@ -471,7 +471,7 @@ def generate_lyrics(
     )
 
     if not api_key:
-        print("[WujiNodes] 尚未设置 API 密钥，请在「无极作词师」节点的 API密钥 字段填入，改用默认示范歌词。")
+        print("[WujiNodes] 尚未设置 API 密钥，请在「工坊作词师」节点的 API密钥 字段填入，改用默认示范歌词。")
         return FALLBACK_LYRICS
 
     try:

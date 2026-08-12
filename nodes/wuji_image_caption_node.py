@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""无极图像反推提示词节点。"""
+"""工坊图像反推提示词节点。"""
 
 try:
     from ..utils import config, llm_api

@@ -46,7 +46,7 @@ def generate_audio(lyrics, prompt, cfg, steps, seed, duration):
     full_prompt = f"{prompt}, {str(lyrics)[:200]}".strip(", ").strip()
 
     logs = [
-        "=== 无极音乐人 ===",
+        "=== 工坊音乐人 ===",
         f"模型：{MODEL_NAME}",
         f"提示词：{full_prompt}",
         f"cfg_scale={cfg} / 采样步数={steps} / 种子={seed} / 时长={duration}s",

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""无极提示词翻译节点。"""
+"""工坊提示词翻译节点。"""
 
 try:
     from ..utils import config, llm_api

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""无极作词师节点。"""
+"""工坊作词师节点。"""
 
 try:
     from ..utils import config, llm_api
