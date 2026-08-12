@@ -1,3 +1,23 @@
 config.json
 __pycache__/
 *.py[cod]
+
+# Python 依赖 / 虚拟环境（不随项目上传）
+.venv/
+venv/
+env/
+ENV/
+
+# Node.js 依赖
+node_modules/
+
+# 构建产物
+dist/
+build/
+*.egg-info/
+
+# 编辑器 / 系统文件
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
