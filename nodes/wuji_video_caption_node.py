@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-"""无极视频反推提示词节点。兼容 IMAGE（[B,H,W,C] 张量）与 VHS_VIDEOFORMAT（VHS 视频对象）两种输入。"""
+"""无极视频反推提示词节点。
+支持三个输入端口：
+  「图像」— 单图 / 多图 [B,H,W,C] 张量（可连 LoadImage 等节点）
+  「视频」— 多帧 [B,H,W,C] 张量 或 VHS_VIDEOFORMAT（可直连加载视频节点）
+两者均为可选，支持 仅图像、仅视频、图像+视频 三种组合。
+"""
 
 import os
 import subprocess
@@ -12,30 +17,28 @@ except ImportError:  # 直接执行时的回退方案
     from utils import config, llm_api
 
 
+# ---------------------------------------------------------------
+# 帮助函数
+# ---------------------------------------------------------------
+
 def _extract_video_path(video_input):
     """从各种视频输入格式中尝试提取视频文件路径。返回路径字符串或 None。"""
-    # VHS_VIDEOFORMAT 通常是 (source_dict, cap_dict) 元组
     if isinstance(video_input, (tuple, list)) and len(video_input) >= 1:
         src = video_input[0]
         if isinstance(src, dict):
-            # VHS 格式：{"source": "path"|"url"|"ffmpeg", "path": "...", ...}
             if src.get("source") == "path" and src.get("path"):
                 p = src["path"]
                 return p if isinstance(p, str) and os.path.isfile(p) else None
-            # 有些版本直接给 path
             for key in ("path", "filepath", "file"):
                 if key in src and isinstance(src[key], str) and os.path.isfile(src[key]):
                     return src[key]
-        # 元组里直接包着路径字符串
         for item in video_input:
             if isinstance(item, str) and os.path.isfile(item):
                 return item
-    # 字典直接给路径
     if isinstance(video_input, dict):
         for key in ("path", "filepath", "file"):
             if key in video_input and isinstance(video_input[key], str) and os.path.isfile(video_input[key]):
                 return video_input[key]
-    # 直接是路径字符串
     if isinstance(video_input, str) and os.path.isfile(video_input):
         return video_input
     return None
@@ -43,7 +46,6 @@ def _extract_video_path(video_input):
 
 def _find_ffmpeg():
     """查找可用的 ffmpeg 可执行文件路径。"""
-    # 1. 系统 PATH 中的 ffmpeg
     for exe in ("ffmpeg", "ffmpeg.exe"):
         try:
             r = subprocess.run([exe, "-version"], capture_output=True, timeout=5)
@@ -51,7 +53,6 @@ def _find_ffmpeg():
                 return exe
         except (FileNotFoundError, subprocess.TimeoutExpired):
             pass
-    # 2. ComfyUI_VideoHelperSuite 自带的 ffmpeg
     try:
         import folder_paths
         vhs_dir = os.path.join(folder_paths.base_path, "custom_nodes", "ComfyUI-VideoHelperSuite")
@@ -73,7 +74,6 @@ def _extract_frames_ffmpeg(video_path, max_frames=8, ffmpeg_exe=None):
     if not ffmpeg:
         raise RuntimeError("未找到 ffmpeg，无法从视频文件抽帧，请先使用帧提取节点将视频转为 IMAGE 类型。")
 
-    # 先获取视频总帧数
     probe_cmd = [
         ffmpeg, "-i", video_path,
         "-map", "0:v:0", "-c", "copy", "-f", "null", "-",
@@ -81,7 +81,6 @@ def _extract_frames_ffmpeg(video_path, max_frames=8, ffmpeg_exe=None):
     total_frames = None
     try:
         r = subprocess.run(probe_cmd, capture_output=True, text=True, timeout=30)
-        # ffmpeg 输出到 stderr，查找 frame=  数字
         for line in r.stderr.splitlines():
             line = line.strip()
             if line.startswith("frame="):
@@ -93,13 +92,11 @@ def _extract_frames_ffmpeg(video_path, max_frames=8, ffmpeg_exe=None):
         total_frames = None
 
     if not total_frames or total_frames <= 0:
-        total_frames = max_frames * 3  # 回退估计值
+        total_frames = max_frames * 3
 
-    # 均匀抽帧的时间点（用 select 滤镜）
     n = min(max_frames, total_frames)
     if n < 1:
         n = 1
-    # 等间隔选取帧序号（0 到 total_frames-1）
     indices = np.linspace(0, total_frames - 1, n).astype(int).tolist()
     select_expr = "+".join([f"eq(n\\,{i})" for i in indices])
 
@@ -123,15 +120,14 @@ def _extract_frames_ffmpeg(video_path, max_frames=8, ffmpeg_exe=None):
                 frames.append(np.array(img, dtype=np.uint8))
         if not frames:
             raise RuntimeError("ffmpeg 未能抽取任何帧。")
-        return np.stack(frames, axis=0)  # [B, H, W, C]
+        return np.stack(frames, axis=0)
 
 
 def _normalize_video_input(video_input, max_frames=8):
-    """将各种视频输入统一为 [B,H,W,C] numpy 数组（uint8, RGB）。"""
+    """将各类视频输入统一为 [B,H,W,C] uint8 numpy 数组。"""
     import numpy as np
     import torch
 
-    # torch.Tensor → numpy，ComfyUI 中 IMAGE 是 [B,H,W,C] float32 0-1
     if isinstance(video_input, torch.Tensor):
         arr = video_input.detach().cpu().numpy()
         if arr.dtype != np.uint8:
@@ -142,7 +138,6 @@ def _normalize_video_input(video_input, max_frames=8):
             arr = arr[None, ...]
         return arr
 
-    # numpy 数组
     if isinstance(video_input, np.ndarray):
         arr = video_input
         if arr.dtype != np.uint8:
@@ -153,12 +148,10 @@ def _normalize_video_input(video_input, max_frames=8):
             arr = arr[None, ...]
         return arr
 
-    # 尝试作为视频文件 / VHS_VIDEOFORMAT 处理
     video_path = _extract_video_path(video_input)
     if video_path:
         return _extract_frames_ffmpeg(video_path, max_frames=max_frames)
 
-    # 最后尝试：如果是 list/tuple of tensor/ndarray，逐帧转换
     if isinstance(video_input, (tuple, list)) and len(video_input) > 0:
         frames = []
         for item in video_input:
@@ -174,11 +167,54 @@ def _normalize_video_input(video_input, max_frames=8):
             return np.stack(frames, axis=0)
 
     raise TypeError(
-        "不支持的视频输入类型：{}。请连接 IMAGE 类型（[B,H,W,C] 张量）或 VHS_VIDEOFORMAT（视频加载节点输出）。".format(
-            type(video_input).__name__
-        )
+        "不支持的视频输入类型：{}。请连接 IMAGE / VHS_VIDEOFORMAT 类型。".format(type(video_input).__name__)
     )
 
+
+def _normalize_image_input(image_input):
+    """将各类单图输入统一为 [B,H,W,C] uint8 numpy 数组。"""
+    import numpy as np
+    import torch
+
+    if image_input is None:
+        return None
+
+    if isinstance(image_input, torch.Tensor):
+        arr = image_input.detach().cpu().numpy()
+        if arr.dtype != np.uint8:
+            arr = np.clip(arr * 255.0, 0, 255).astype(np.uint8)
+        else:
+            arr = arr.astype(np.uint8)
+        if arr.ndim == 3:
+            arr = arr[None, ...]
+        return arr
+
+    if isinstance(image_input, np.ndarray):
+        arr = image_input
+        if arr.dtype != np.uint8:
+            arr = np.clip(arr * 255.0, 0, 255).astype(np.uint8)
+        else:
+            arr = arr.astype(np.uint8)
+        if arr.ndim == 3:
+            arr = arr[None, ...]
+        return arr
+
+    try:
+        from PIL import Image
+        if isinstance(image_input, Image.Image):
+            arr = np.array(image_input.convert("RGB"), dtype=np.uint8)
+            if arr.ndim == 3:
+                arr = arr[None, ...]
+            return arr
+    except ImportError:
+        pass
+
+    raise TypeError("不支持的图像输入类型：{}。".format(type(image_input).__name__))
+
+
+# ---------------------------------------------------------------
+# 节点定义
+# ---------------------------------------------------------------
 
 class WujiVideoCaption:
     CATEGORY = "无极 Wuji/反推"
@@ -191,10 +227,6 @@ class WujiVideoCaption:
         saved = config.load_config(force=True)
         return {
             "required": {
-                "视频帧": (
-                    "*",
-                    {"tooltip": "接受 IMAGE（[B,H,W,C] 多帧张量）或 VHS_VIDEOFORMAT（加载视频节点直连），自动抽帧反推"},
-                ),
                 "API密钥": (
                     "STRING",
                     {
@@ -220,11 +252,20 @@ class WujiVideoCaption:
                     {"multiline": True, "default": "", "placeholder": "选填：补充说明"},
                 ),
             },
+            "optional": {
+                "图像": (
+                    "*",
+                    {"tooltip": "可选：单图或多图 [B,H,W,C] 张量（可连 LoadImage 等），与视频二选一或同时使用"},
+                ),
+                "视频": (
+                    "*",
+                    {"tooltip": "可选：多帧 [B,H,W,C] 张量 或 VHS_VIDEOFORMAT（可直连加载视频节点），与图像二选一或同时使用"},
+                ),
+            },
         }
 
     def reverse(
         self,
-        视频帧,
         API密钥="",
         API网址="",
         模型名称="",
@@ -233,6 +274,8 @@ class WujiVideoCaption:
         抽取帧数=8,
         提示词风格="详细描述",
         额外要求="",
+        图像=None,
+        视频=None,
     ):
         if 保存密钥设置 and (API密钥.strip() or API网址.strip() or 模型名称.strip()):
             config.save_config(
@@ -241,12 +284,43 @@ class WujiVideoCaption:
                 model=模型名称,
             )
 
+        import numpy as np
+
+        image_frames = None
+        video_frames = None
+
+        # 处理图像输入
         try:
-            frames_np = _normalize_video_input(视频帧, max_frames=抽取帧数)
+            if 图像 is not None:
+                image_frames = _normalize_image_input(图像)
+        except Exception as e:  # noqa: BLE001
+            err_msg = f"（图像输入解析失败：{e}）"
+            print(f"[WujiNodes] {err_msg}")
+            return (err_msg,)
+
+        # 处理视频输入
+        try:
+            if 视频 is not None:
+                video_frames = _normalize_video_input(视频, max_frames=抽取帧数)
         except Exception as e:  # noqa: BLE001
             err_msg = f"（视频输入解析失败：{e}）"
             print(f"[WujiNodes] {err_msg}")
             return (err_msg,)
+
+        # 合并帧（图像帧在前，视频帧在后）
+        parts = []
+        if image_frames is not None and image_frames.shape[0] > 0:
+            parts.append(image_frames)
+        if video_frames is not None and video_frames.shape[0] > 0:
+            parts.append(video_frames)
+
+        if not parts:
+            return ("（请至少连接「图像」或「视频」其中一个输入端口）",)
+
+        if len(parts) == 1:
+            frames_np = parts[0]
+        else:
+            frames_np = np.concatenate(parts, axis=0)
 
         prompt = llm_api.reverse_prompt(
             image_np=frames_np,
