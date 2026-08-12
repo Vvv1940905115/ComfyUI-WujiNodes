@@ -17,7 +17,9 @@
   - [第三步：定位 Python 解释器（最容易出错的一步）](#第三步定位-python-解释器最容易出错的一步)
   - [第四步：安装 Python 依赖包](#第四步安装-python-依赖包)
   - [第五步：重启 ComfyUI 并验证](#第五步重启-comfyui-并验证)
+  - [如何更新插件](#如何更新插件)
   - [补充：依赖未安装 / 缺失时的处理](#补充依赖未安装--缺失时的处理)
+  - [Windows 下安装 audiocraft 的特别说明（可选）](#windows-下安装-audiocraft-的特别说明可选)
 - [配置 API 密钥（第一次使用必读）](#配置-api-密钥第一次使用必读)
   - [在哪填写密钥？](#在哪填写密钥)
   - [密钥会保存到哪里？](#密钥会保存到哪里)
@@ -116,6 +118,18 @@ ComfyUI\
 
    > **文件夹名必须是 `ComfyUI-WujiNodes`**，不能包含额外空格或后缀，否则 ComfyUI 无法识别。
 
+#### 方式 C：通过 ComfyUI Manager 安装（最简单）
+
+如果你的 ComfyUI 已安装了 [ComfyUI Manager](https://github.com/ltdrdata/ComfyUI-Manager)：
+
+1. 打开 ComfyUI → 点击右上角 **Manager** 按钮
+2. 选择 **`Install via Git URL`**
+3. 粘贴本仓库地址：`https://github.com/Vvv1940905115/ComfyUI-WujiNodes.git`
+4. 点击确认，等待克隆完成
+5. **重启 ComfyUI** 即可生效
+
+> ComfyUI Manager 会自动完成依赖安装，无需手动执行 `pip install`。如果安装后仍有缺失依赖报错，请参考下方的补充处理步骤。
+
 ---
 
 ### 第三步：定位 Python 解释器（最容易出错的一步）
@@ -182,9 +196,20 @@ cd D:\Ai\ComfyUI\ComfyUI\custom_nodes\ComfyUI-WujiNodes
 D:\Ai\ComfyUI\ComfyUI\python_embeded\python.exe -m pip install -r requirements.txt
 ```
 
-> 如果提示 `No module named pip`，需要先安装 pip：
+> **常见问题 1**：如果提示 `No module named pip`，需要先安装 pip：
 > ```powershell
 > D:\Ai\ComfyUI\ComfyUI\python_embeded\python.exe -m ensurepip
+> ```
+>
+> **常见问题 2**：如果提示 `externally-managed-environment` 错误（便携版新版 Python），临时加 `--break-system-packages` 即可：
+> ```powershell
+> D:\Ai\ComfyUI\ComfyUI\python_embeded\python.exe -m pip install --break-system-packages -r requirements.txt
+> ```
+>
+> **常见问题 3**：如果提示找不到 `python_embeded` 目录，某些 ComfyUI 版本将其命名为 `python_embedded`（多一个字母 d）。用 `dir` 命令逐个确认：
+> ```powershell
+> dir D:\Ai\ComfyUI\ComfyUI\python_embeded\   # 常见写法
+> dir D:\Ai\ComfyUI\ComfyUI\python_embedded\  # 备选写法
 > ```
 
 #### 系统 / venv Python 安装的 ComfyUI
@@ -203,6 +228,8 @@ Successfully installed numpy-xxx Pillow-xxx openai-xxx ...
 
 > `requirements.txt` 默认只包含必需依赖（`torch` / `torchaudio` / `numpy` / `Pillow` / `openai` / `requests`）。
 > `audiocraft` 和 `transformers` 是**可选依赖**，默认不会安装，避免 Windows 下编译失败卡住。
+>
+> **关于 `torch` / `torchaudio`**：这两个包通常已随 ComfyUI 自带，`pip install` 会检测到已安装版本并跳过，一般不会导致版本冲突。如果遇到 torch 版本问题，可临时移除 `requirements.txt` 中前两行后重试。
 
 ---
 
@@ -226,7 +253,26 @@ Successfully installed numpy-xxx Pillow-xxx openai-xxx ...
 
 ---
 
-### 补充：依赖未安装 / 缺失时的处理
+### 如何更新插件
+
+如果以后有新版本推送，你可以这样更新：
+
+**用 Git 克隆的用户：**
+
+```powershell
+cd D:\Ai\ComfyUI\ComfyUI\custom_nodes\ComfyUI-WujiNodes
+git pull
+```
+
+然后**重启 ComfyUI** 即可。一般无需重新 pip install，除非 `requirements.txt` 有新增依赖。
+
+**手动下载 ZIP 的用户：**
+
+重复「第二步 - 方式 B」的流程：下载最新 ZIP → 解压 → 覆盖原有 `ComfyUI-WujiNodes` 文件夹 → 重启 ComfyUI。
+
+---
+
+## 补充：依赖未安装 / 缺失时的处理
 
 如果启动后报错缺少某个包，或某些节点执行时报错，请按以下步骤补装。
 
@@ -329,6 +375,8 @@ pip install Pillow
 - **安全**：该文件已通过 `.gitignore` 排除，不会被提交到 GitHub
 - **遮蔽**：ComfyUI 日志输出时会自动遮蔽密钥，显示如 `sk-1******cdef`
 - **只写一次**：在一个节点填好并执行后，其他节点打开时会自动读取已保存的值
+- **文件权限**：保存时自动设为 `600`（仅当前用户可读写，Windows 上可能忽略）
+- **生命周期**：首次执行任意带 API 字段的节点时自动生成 → 每次修改保存密钥设置并执行时更新 → 删除文件可重置为默认配置
 
 ### 支持哪些 API 服务商？
 
