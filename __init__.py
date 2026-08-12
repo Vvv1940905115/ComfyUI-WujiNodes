@@ -9,6 +9,9 @@ from .nodes.wuji_video_caption_node import WujiVideoCaption
 from .nodes.wuji_translate_node import WujiPromptTranslator
 from .utils import config
 
+# 让 ComfyUI 加载 js/ 目录下的前端脚本（wuji_ui.js）
+WEB_DIRECTORY = "./js"
+
 NODE_CLASS_MAPPINGS = {
     "WujiApiSettings": WujiApiSettings,
     "WujiLyricGenerator": WujiLyricGenerator,
