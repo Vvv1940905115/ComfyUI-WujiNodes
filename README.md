@@ -179,7 +179,7 @@ pip install -r requirements.txt
 
 **1. 确定 Python 解释器**（见上文「第三步」）
 
-**2. 一键安装全部依赖**
+**2. 一键安装全部依赖*
 
 ```powershell
 # 便携版 ComfyUI
