@@ -1,4 +1,4 @@
-# 提示词工坊 PromptWorkshop
+# 提示词工坊
 
 一站式 ComfyUI 提示词工具套件：图片视频反推提示词、全局输入框一键翻译、提示词优化、AI 歌词与音乐生成。
 
@@ -244,10 +244,10 @@ Successfully installed numpy-xxx Pillow-xxx openai-xxx ...
    无极作词师、无极音乐人、无极图像反推提示词、无极视频反推提示词、无极提示词翻译 | API密钥=(未设置)
    ```
 
-4. 打开浏览器进入 ComfyUI Web 界面，在空白处右键 → **`Add Node`**，在节点菜单里找到 **`提示词工坊 PromptWorkshop`** 分类，下面应有 3 个子分类：
-   - `提示词工坊 PromptWorkshop/作词` → 无极作词师
-   - `提示词工坊 PromptWorkshop/音乐` → 无极音乐人
-   - `提示词工坊 PromptWorkshop/反推` → 无极图像反推提示词、无极视频反推提示词、无极提示词翻译
+4. 打开浏览器进入 ComfyUI Web 界面，在空白处右键 → **`Add Node`**，在节点菜单里找到 **`提示词工坊`** 分类，下面应有 3 个子分类：
+   - `提示词工坊/作词` → 无极作词师
+   - `提示词工坊/音乐` → 无极音乐人
+   - `提示词工坊/反推` → 无极图像反推提示词、无极视频反推提示词、无极提示词翻译
 
    全部 5 个节点可见 = 安装成功。
 
@@ -551,7 +551,7 @@ pip install Pillow
 
 ## 常见问题（FAQ）
 
-### Q1：ComfyUI 启动后看不到「提示词工坊 PromptWorkshop」分类？
+### Q1：ComfyUI 启动后看不到「提示词工坊」分类？
 
 **A：** 请检查 ComfyUI 启动日志中是否出现了紫色的 `[ComfyUI-WujiNodes]` 输出。
 

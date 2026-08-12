@@ -12,7 +12,7 @@ MAX_SEED = 0xFFFFFFFFFFFFFFFF
 
 
 class WujiMusician:
-    CATEGORY = "提示词工坊 PromptWorkshop/音乐"
+    CATEGORY = "提示词工坊/音乐"
     RETURN_TYPES = ("AUDIO", "STRING")
     RETURN_NAMES = ("音频波形", "信息日志")
     FUNCTION = "generate_music"

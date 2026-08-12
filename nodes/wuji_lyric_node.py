@@ -8,7 +8,7 @@ except ImportError:  # 直接执行时的回退方案
 
 
 class WujiLyricGenerator:
-    CATEGORY = "提示词工坊 PromptWorkshop/作词"
+    CATEGORY = "提示词工坊/作词"
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("生成歌词",)
     FUNCTION = "generate"
