@@ -8,7 +8,7 @@ except ImportError:  # 直接执行时的回退方案
 
 
 class WujiImageCaption:
-    CATEGORY = "提示词工坊/反推"
+    CATEGORY = "工坊提示词/反推"
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("反推提示词",)
     FUNCTION = "reverse"

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""ComfyUI-WujiNodes：无极作词师 / 无极音乐人。"""
+"""ComfyUI-WujiNodes：工坊作词师 / 工坊音乐人。"""
 
 from .nodes.wuji_lyric_node import WujiLyricGenerator
 from .nodes.wuji_music_node import WujiMusician
@@ -20,11 +20,11 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "WujiLyricGenerator": "无极作词师",
-    "WujiMusician": "无极音乐人 (ACE-Step1.5XL)",
-    "WujiImageCaption": "无极图像反推提示词",
-    "WujiVideoCaption": "无极视频反推提示词",
-    "WujiPromptTranslator": "无极提示词翻译",
+    "WujiLyricGenerator": "工坊作词师",
+    "WujiMusician": "工坊音乐人 (ACE-Step1.5XL)",
+    "WujiImageCaption": "工坊图像反推提示词",
+    "WujiVideoCaption": "工坊视频反推提示词",
+    "WujiPromptTranslator": "工坊提示词翻译",
 }
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
@@ -32,6 +32,6 @@ __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
 _cfg = config.load_config(force=True)
 print(
     "\033[95m[ComfyUI-WujiNodes]\033[0m 已载入 5 个节点："
-    "无极作词师、无极音乐人、无极图像反推提示词、无极视频反推提示词、无极提示词翻译 | "
+    "工坊作词师、工坊音乐人、工坊图像反推提示词、工坊视频反推提示词、工坊提示词翻译 | "
     f"API密钥={config.mask(_cfg.get('api_key', ''))}"
 )
