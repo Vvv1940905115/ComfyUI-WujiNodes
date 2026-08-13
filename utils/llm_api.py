@@ -160,6 +160,32 @@ def _image_to_data_uri(image_np):
     return f"data:image/png;base64,{b64}"
 
 
+def _frames_to_grid(frames, max_side=512):
+    """将多帧 [B, H, W, C] 排列成一张网格图，供不支持多图输入的视觉模型使用。"""
+    import numpy as np
+    from PIL import Image
+
+    frames = np.asarray(frames)
+    if frames.ndim == 3:
+        frames = frames[None, ...]
+    b = frames.shape[0]
+    cols = int(np.ceil(np.sqrt(b)))
+    rows = int(np.ceil(b / cols))
+
+    cells = []
+    for f in frames:
+        img = Image.fromarray(f.astype("uint8"), "RGB")
+        img.thumbnail((max_side, max_side), Image.LANCZOS)
+        cells.append(img)
+
+    cw, ch = cells[0].size
+    grid = Image.new("RGB", (cw * cols, ch * rows), (0, 0, 0))
+    for i, img in enumerate(cells):
+        r, c = divmod(i, cols)
+        grid.paste(img, (c * cw, r * ch))
+    return np.array(grid, dtype=np.uint8)
+
+
 def _call_openai_vision(system_prompt, user_text, image_data_uris, api_key, base_url, model):
     """多模态调用：向支持视觉的模型发送文本 + 一或多张图片。"""
     content = [{"type": "text", "text": user_text}]
@@ -367,6 +393,17 @@ def reverse_prompt(
             raise ValueError("API 返回空内容")
         return text.strip()
     except Exception as e:  # noqa: BLE001
+        # 部分视觉模型不支持多帧/多图输入，回退为拼接成单张网格图再试一次
+        if len(data_uris) > 1:
+            try:
+                print(f"[WujiNodes] 多帧发送失败（{e}），回退为单张网格图重试。")
+                grid = _frames_to_grid(frames)
+                grid_uri = _image_to_data_uri(grid)
+                text = _call_openai_vision(system, user_text, [grid_uri], api_key, base_url, model)
+                if text and text.strip():
+                    return text.strip()
+            except Exception as e2:  # noqa: BLE001
+                print(f"[WujiNodes] 网格图回退也失败：{e2}")
         print(f"[WujiNodes] 反推提示词 API 调用失败：{e}")
         return "（反推提示词 API 调用失败，请检查密钥与模型是否支持视觉）"
 
