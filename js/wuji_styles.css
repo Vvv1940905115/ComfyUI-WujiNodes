@@ -1,9 +1,22 @@
 /* 工坊提示词 · 工具栏按钮样式（仅影响本插件的提示词优化 / 翻译按钮） */
 .wuji-toolbar {
+  position: absolute;
+  top: 40%;
+  right: 6px;
+  transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin: 4px 0 0 4px;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(190, 190, 205, 0.4);
+  z-index: 10;
+}
+
+/* 输入框右侧预留空白，避免输入文字与按钮组重叠 */
+.wuji-textarea {
+  padding-right: 82px !important;
 }
 
 .wuji-btn {
@@ -11,22 +24,21 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  padding: 6px;
+  width: 28px;
+  height: 28px;
+  padding: 5px;
   box-sizing: border-box;
-  border: 1px solid rgba(180, 180, 190, 0.25);
-  border-radius: 7px;
-  background: rgba(255, 255, 255, 0.04);
-  color: #b8b8c0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #c9c9d4;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
 }
 
 .wuji-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.16);
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.35);
 }
 
 .wuji-btn:active {

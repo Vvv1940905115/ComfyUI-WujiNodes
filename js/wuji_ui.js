@@ -120,8 +120,15 @@ function injectToTextarea(textarea) {
   if (processed.has(textarea)) return;
   if (!textarea.parentNode) return;
   processed.add(textarea);
+  const parent = textarea.parentNode;
+  // 让按钮能绝对定位到输入框内部右侧：将父容器设为定位上下文（不改变布局）
+  if (getComputedStyle(parent).position === 'static') {
+    parent.style.position = 'relative';
+  }
+  // 输入框右侧预留空白，避免文字与按钮组重叠
+  textarea.classList.add('wuji-textarea');
   const bar = buildToolbar(textarea);
-  textarea.parentNode.insertBefore(bar, textarea.nextSibling);
+  parent.insertBefore(bar, textarea.nextSibling);
 }
 
 function scanAndInject() {
