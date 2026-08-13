@@ -1,0 +1,115 @@
+/* 工坊提示词 · 工具栏按钮样式（仅影响本插件的提示词优化 / 翻译按钮） */
+.wuji-toolbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 0 4px;
+}
+
+.wuji-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 6px;
+  box-sizing: border-box;
+  border: 1px solid rgba(180, 180, 190, 0.25);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #b8b8c0;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+}
+
+.wuji-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.wuji-btn:active {
+  transform: scale(0.92);
+}
+
+.wuji-btn:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+
+.wuji-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* 加载动画：点击后按钮内显示旋转圆环，结束后恢复图标 */
+.wuji-btn.wuji-loading svg {
+  display: none;
+}
+
+.wuji-btn.wuji-loading::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: wuji-spin 0.7s linear infinite;
+}
+
+@keyframes wuji-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 悬浮提示：300ms 延迟显示，圆角 + 阴影，200ms 淡出 */
+.wuji-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(22, 22, 28, 0.94);
+  color: #eeeeee;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  transition: opacity 0.2s ease;
+  z-index: 9999;
+}
+
+.wuji-tooltip.wuji-visible {
+  opacity: 1;
+}
+
+/* 轻量 Toast 提示 */
+.wuji-toast {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(28, 28, 34, 0.95);
+  color: #ffffff;
+  font-size: 13px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.wuji-toast.wuji-visible {
+  opacity: 1;
+}
+
+.wuji-toast.wuji-error {
+  background: rgba(190, 60, 60, 0.95);
+}
+

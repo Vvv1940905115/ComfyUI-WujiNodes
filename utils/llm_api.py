@@ -105,7 +105,7 @@ def _build_user_prompt(
     return "\n".join(lines)
 
 
-def _call_openai(system_prompt, user_prompt, api_key, base_url, model):
+def _call_openai(system_prompt, user_prompt, api_key, base_url, model, temperature=0.9, max_tokens=1500):
     """优先使用 openai SDK，失败时回退 requests。"""
     try:
         from openai import OpenAI
@@ -117,8 +117,8 @@ def _call_openai(system_prompt, user_prompt, api_key, base_url, model):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            temperature=0.9,
-            max_tokens=1500,
+            temperature=temperature,
+            max_tokens=max_tokens,
         )
         return resp.choices[0].message.content
     except ImportError:
@@ -137,8 +137,8 @@ def _call_openai(system_prompt, user_prompt, api_key, base_url, model):
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
-                "temperature": 0.9,
-                "max_tokens": 1500,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
             },
             timeout=120,
         )
@@ -417,12 +417,108 @@ def translate_prompt(
 
     try:
         print(f"[WujiNodes] 提示词翻译 调用 {base_url} / model={model} / key={config.mask(api_key)}")
-        result = _call_openai(system, user_text, api_key, base_url, model)
+        result = _call_openai(system, user_text, api_key, base_url, model, temperature=0.3, max_tokens=2000)
         if not result or not result.strip():
             raise ValueError("API 返回空内容")
         return result.strip()
     except Exception as e:  # noqa: BLE001
         print(f"[WujiNodes] 提示词翻译 API 调用失败：{e}，返回原文。")
+        return text
+
+
+def optimize_prompt(
+    text,
+    api_key='',
+    base_url='',
+    model='',
+):
+    '''提示词润色优化：让AI绘画提示词更专业、更具表现力。'''
+    api_key = (api_key or '').strip() or config.get_api_key()
+    base_url = (base_url or '').strip() or config.get_base_url()
+    model = (model or '').strip() or config.get_model()
+
+    text = (text or '').strip()
+    if not text:
+        return ''
+
+    if not api_key:
+        print('[WujiNodes] 尚未设置 API 密钥，无法优化提示词。')
+        return text
+
+    system = '''你是一位顶级的 AI 绘画提示词专家，精通 Stable Diffusion、Midjourney、DALL·E 等主流模型的提示词写法。
+请将用户给出的原始提示词进行专业润色和优化，使其更具表现力、细节更丰富、更符合AI模型的理解习惯。
+要求：
+1. 保留原意和核心主体，不改变用户的创作意图。
+2. 补充合理的细节描述：光影、质感、构图、风格、氛围、画质标签等。
+3. 若原文包含较多中文字符则优化为中文，若原文以英文/标签为主则优化为英文标签风格（逗号分隔）。
+4. 直接输出优化后的提示词，不要任何解释或 Markdown 围栏。'''
+
+    user_text = f'''请对以下AI绘画提示词进行专业润色优化，使其更优秀、细节更丰富：
+
+{text}'''
+
+    try:
+        print(f'[WujiNodes] 提示词优化 调用 {base_url} / model={model} / key={config.mask(api_key)}')
+        result = _call_openai(system, user_text, api_key, base_url, model, temperature=0.7, max_tokens=2000)
+        if not result or not result.strip():
+            raise ValueError('API 返回空内容')
+        return result.strip()
+    except Exception as e:  # noqa: BLE001
+        print(f'[WujiNodes] 提示词优化 API 调用失败：{e}，返回原文。')
+        return text
+
+
+def smart_translate(
+    text,
+    api_key='',
+    base_url='',
+    model='',
+):
+    '''智能互译：自动识别中英文，中文翻英文、英文翻中文（提示词专用）。'''
+    api_key = (api_key or '').strip() or config.get_api_key()
+    base_url = (base_url or '').strip() or config.get_base_url()
+    model = (model or '').strip() or config.get_model()
+
+    text = (text or '').strip()
+    if not text:
+        return ''
+
+    if not api_key:
+        print('[WujiNodes] 尚未设置 API 密钥，无法翻译。')
+        return text
+
+    chinese_chars = sum(1 for c in text if 0x4e00 <= ord(c) <= 0x9fff)
+    is_chinese = chinese_chars > len(text) * 0.3
+
+    if is_chinese:
+        system = '''你是一位专业的 AI 绘画提示词翻译专家，精通中英文提示词转换。
+请将用户给出的中文提示词翻译成专业的英文AI绘画标签格式。
+要求：
+1. 使用逗号分隔的标签（tags）格式，符合 Stable Diffusion / Midjourney 习惯。
+2. 保留专业术语，补充常用画质标签（如 masterpiece, best quality, 8k 等）。
+3. 忠实原意，直接输出翻译结果，不要任何解释。'''
+        user_text = f'''请将以下中文提示词翻译成专业的英文AI绘画标签（逗号分隔）：
+
+{text}'''
+    else:
+        system = '''你是一位专业的 AI 绘画提示词翻译专家，精通中英文提示词转换。
+请将用户给出的英文提示词翻译成流畅自然的中文描述。
+要求：
+1. 准确理解每个标签的含义，用通顺的中文表达。
+2. 保留所有关键信息，不遗漏主体和风格描述。
+3. 直接输出翻译结果，不要任何解释。'''
+        user_text = f'''请将以下英文AI绘画提示词翻译成中文：
+
+{text}'''
+
+    try:
+        print(f'[WujiNodes] 智能互译 调用 {base_url} / model={model} / key={config.mask(api_key)}')
+        result = _call_openai(system, user_text, api_key, base_url, model, temperature=0.3, max_tokens=2000)
+        if not result or not result.strip():
+            raise ValueError('API 返回空内容')
+        return result.strip()
+    except Exception as e:  # noqa: BLE001
+        print(f'[WujiNodes] 智能互译 API 调用失败：{e}，返回原文。')
         return text
 
 

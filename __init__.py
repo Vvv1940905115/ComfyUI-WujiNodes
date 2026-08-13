@@ -27,7 +27,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "WujiPromptTranslator": "工坊提示词翻译",
 }
 
-__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
+__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
 
 _cfg = config.load_config(force=True)
 print(
@@ -35,3 +35,9 @@ print(
     "工坊作词师、工坊音乐人、工坊图像反推提示词、工坊视频反推提示词、工坊提示词翻译 | "
     f"API密钥={config.mask(_cfg.get('api_key', ''))}"
 )
+
+# 注册工具栏 API 路由（提示词优化 / 翻译）
+try:
+    from . import server  # noqa: F401
+except Exception as _e:  # noqa: BLE001
+    print(f'[ComfyUI-WujiNodes] 服务端路由注册失败：{_e}')
