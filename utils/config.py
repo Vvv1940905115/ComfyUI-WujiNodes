@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """插件本地设置管理：保存 API 密钥等信息。
 
-配置文件位置：ComfyUI-WujiNodes/config.json
+配置文件位置：ComfyUI-PromptWorkshop/config.json
 """
 
 import json

@@ -80,7 +80,7 @@ D:\Ai\ComfyUI\ComfyUI\
 ```
 ComfyUI\
 └── custom_nodes\
-    └── ComfyUI-WujiNodes\   ← 插件放这里，文件夹名不能改
+    └── ComfyUI-PromptWorkshop\   ← 插件放这里，文件夹名不能改
 ```
 
 ---
@@ -100,26 +100,26 @@ ComfyUI\
 2. 克隆本仓库：
 
    ```powershell
-   git clone https://github.com/Vvv1940905115/ComfyUI-WujiNodes.git
+   git clone https://github.com/Vvv1940905115/ComfyUI-PromptWorkshop.git
    ```
 
 3. 检查是否克隆成功：
 
    ```powershell
-   dir ComfyUI-WujiNodes
+   dir ComfyUI-PromptWorkshop
    ```
 
    应该能看到 `__init__.py`、`nodes\`、`utils\`、`js\`、`requirements.txt` 等文件。
 
 #### 方式 B：手动下载 ZIP（没有 git 时使用）
 
-1. 浏览器打开 [GitHub 仓库页面](https://github.com/Vvv1940905115/ComfyUI-WujiNodes)
+1. 浏览器打开 [GitHub 仓库页面](https://github.com/Vvv1940905115/ComfyUI-PromptWorkshop)
 2. 点击绿色按钮 **`<> Code`** → **`Download ZIP`**
-3. 将下载的 `ComfyUI-WujiNodes-main.zip` 解压
-4. 将解压出的 `ComfyUI-WujiNodes-main` 文件夹**重命名为** `ComfyUI-WujiNodes`（去掉 `-main` 后缀）
-5. 把整个 `ComfyUI-WujiNodes` 文件夹复制到 `ComfyUI\custom_nodes\` 下
+3. 将下载的 `ComfyUI-PromptWorkshop-main.zip` 解压
+4. 将解压出的 `ComfyUI-PromptWorkshop-main` 文件夹**重命名为** `ComfyUI-PromptWorkshop`（去掉 `-main` 后缀）
+5. 把整个 `ComfyUI-PromptWorkshop` 文件夹复制到 `ComfyUI\custom_nodes\` 下
 
-   > **文件夹名必须是 `ComfyUI-WujiNodes`**，不能包含额外空格或后缀，否则 ComfyUI 无法识别。
+   > **文件夹名必须是 `ComfyUI-PromptWorkshop`**，不能包含额外空格或后缀，否则 ComfyUI 无法识别。
 
 #### 方式 C：通过 ComfyUI Manager 安装（最简单）
 
@@ -127,7 +127,7 @@ ComfyUI\
 
 1. 打开 ComfyUI → 点击右上角 **Manager** 按钮
 2. 选择 **`Install via Git URL`**
-3. 粘贴本仓库地址：`https://github.com/Vvv1940905115/ComfyUI-WujiNodes.git`
+3. 粘贴本仓库地址：`https://github.com/Vvv1940905115/ComfyUI-PromptWorkshop.git`
 4. 点击确认，等待克隆完成
 5. **重启 ComfyUI** 即可生效
 
@@ -188,7 +188,7 @@ python --version
 先在 PowerShell 中进入插件目录：
 
 ```powershell
-cd D:\Ai\ComfyUI\ComfyUI\custom_nodes\ComfyUI-WujiNodes
+cd D:\Ai\ComfyUI\ComfyUI\custom_nodes\ComfyUI-PromptWorkshop
 ```
 
 然后根据你的 ComfyUI 类型执行对应命令：
@@ -243,7 +243,7 @@ Successfully installed numpy-xxx Pillow-xxx openai-xxx ...
 3. 观察启动日志（黑色终端窗口），应该能看到紫色高亮的一行：
 
    ```
-   [ComfyUI-WujiNodes] 已载入 5 个节点：
+   [ComfyUI-PromptWorkshop] 已载入 5 个节点：
    工坊作词师、工坊音乐人、工坊图像反推提示词、工坊视频反推提示词、工坊提示词翻译 | API密钥=(未设置)
    ```
 
@@ -263,7 +263,7 @@ Successfully installed numpy-xxx Pillow-xxx openai-xxx ...
 **用 Git 克隆的用户：**
 
 ```powershell
-cd D:\Ai\ComfyUI\ComfyUI\custom_nodes\ComfyUI-WujiNodes
+cd D:\Ai\ComfyUI\ComfyUI\custom_nodes\ComfyUI-PromptWorkshop
 git pull
 ```
 
@@ -271,7 +271,7 @@ git pull
 
 **手动下载 ZIP 的用户：**
 
-重复「第二步 - 方式 B」的流程：下载最新 ZIP → 解压 → 覆盖原有 `ComfyUI-WujiNodes` 文件夹 → 重启 ComfyUI。
+重复「第二步 - 方式 B」的流程：下载最新 ZIP → 解压 → 覆盖原有 `ComfyUI-PromptWorkshop` 文件夹 → 重启 ComfyUI。
 
 ---
 
@@ -283,7 +283,7 @@ git pull
 
 ```powershell
 # 先进入插件目录
-cd D:\Ai\ComfyUI\ComfyUI\custom_nodes\ComfyUI-WujiNodes
+cd D:\Ai\ComfyUI\ComfyUI\custom_nodes\ComfyUI-PromptWorkshop
 
 # 便携版
 D:\Ai\ComfyUI\ComfyUI\python_embeded\python.exe -m pip install -r requirements.txt
@@ -576,11 +576,11 @@ pip install Pillow
 
 ### Q1：ComfyUI 启动后看不到「工坊提示词」分类？
 
-**A：** 请检查 ComfyUI 启动日志中是否出现了紫色的 `[ComfyUI-WujiNodes]` 输出。
+**A：** 请检查 ComfyUI 启动日志中是否出现了紫色的 `[ComfyUI-PromptWorkshop]` 输出。
 
-- 如果没有：确认文件夹路径正确为 `custom_nodes/ComfyUI-WujiNodes/`
-- 注意文件夹名不能包含额外空格，如 `ComfyUI-WujiNodes (1)` 或 `ComfyUI-WujiNodes-main` 都不能被识别
-- 下载 ZIP 解压的用户，务必把 `ComfyUI-WujiNodes-main` 重命名为 `ComfyUI-WujiNodes`
+- 如果没有：确认文件夹路径正确为 `custom_nodes/ComfyUI-PromptWorkshop/`
+- 注意文件夹名不能包含额外空格，如 `ComfyUI-PromptWorkshop (1)` 或 `ComfyUI-PromptWorkshop-main` 都不能被识别
+- 下载 ZIP 解压的用户，务必把 `ComfyUI-PromptWorkshop-main` 重命名为 `ComfyUI-PromptWorkshop`
 
 ### Q2：执行 `pip install` 提示「系统找不到指定的路径」？
 
@@ -613,7 +613,7 @@ pip install Pillow
 
 ### Q7：密钥保存在哪里？安全吗？
 
-**A：** 保存在 `ComfyUI-WujiNodes/config.json`。
+**A：** 保存在 `ComfyUI-PromptWorkshop/config.json`。
 
 - 该文件已通过 `.gitignore` 排除，不会被 Git 提交
 - 日志输出时密钥会自动遮蔽（如 `sk-1******cdef`）
@@ -624,7 +624,7 @@ pip install Pillow
 ## 项目文件结构
 
 ```
-ComfyUI-WujiNodes/
+ComfyUI-PromptWorkshop/
 ├── __init__.py                        # 插件入口，注册全部节点
 ├── server.py                          # 工具栏后端 API 路由（提示词优化 / 翻译）
 ├── config.json                        # API 配置（自动生成，不提交 Git）

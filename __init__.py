@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""ComfyUI-WujiNodes：工坊作词师 / 工坊音乐人。"""
+"""ComfyUI-PromptWorkshop：工坊作词师 / 工坊音乐人。"""
 
 from .nodes.wuji_lyric_node import WujiLyricGenerator
 from .nodes.wuji_music_node import WujiMusician
@@ -31,7 +31,7 @@ __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
 
 _cfg = config.load_config(force=True)
 print(
-    "\033[95m[ComfyUI-WujiNodes]\033[0m 已载入 5 个节点："
+    "\033[95m[ComfyUI-PromptWorkshop]\033[0m 已载入 5 个节点："
     "工坊作词师、工坊音乐人、工坊图像反推提示词、工坊视频反推提示词、工坊提示词翻译 | "
     f"API密钥={config.mask(_cfg.get('api_key', ''))}"
 )
@@ -40,4 +40,4 @@ print(
 try:
     from . import server  # noqa: F401
 except Exception as _e:  # noqa: BLE001
-    print(f'[ComfyUI-WujiNodes] 服务端路由注册失败：{_e}')
+    print(f'[ComfyUI-PromptWorkshop] 服务端路由注册失败：{_e}')
