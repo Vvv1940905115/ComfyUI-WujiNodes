@@ -5,6 +5,8 @@ const SVG_OPTIMIZE = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24
 
 const SVG_TRANSLATE = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m5 8 6 6'/><path d='m4 14 6-6 2-3'/><path d='M2 5h12'/><path d='M7 2h1'/><path d='m22 22-5-10-5 10'/><path d='M14 18h6'/></svg>";
 
+const SVG_STAR = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg>";
+
 const processed = new WeakSet();
 let toastEl = null;
 let toastTimer = null;
@@ -97,6 +99,10 @@ function bindTooltip(btn) {
 function buildToolbar(textarea) {
   const bar = document.createElement('div');
   bar.className = 'wuji-toolbar';
+
+  const menu = document.createElement('div');
+  menu.className = 'wuji-menu';
+
   const btnO = document.createElement('button');
   btnO.type = 'button';
   btnO.className = 'wuji-btn';
@@ -107,8 +113,20 @@ function buildToolbar(textarea) {
   btnT.className = 'wuji-btn';
   btnT.setAttribute('data-tip', '翻译');
   btnT.innerHTML = SVG_TRANSLATE;
-  bar.appendChild(btnO);
-  bar.appendChild(btnT);
+
+  menu.appendChild(btnO);
+  menu.appendChild(btnT);
+
+  const star = document.createElement('button');
+  star.type = 'button';
+  star.className = 'wuji-star';
+  star.setAttribute('data-tip', '提示词工具');
+  star.innerHTML = SVG_STAR;
+
+  bar.appendChild(menu);
+  bar.appendChild(star);
+
+  bindTooltip(star);
   bindTooltip(btnO);
   bindTooltip(btnT);
   btnO.addEventListener('click', function () { runAction(textarea, btnO, 'optimize'); });

@@ -1,22 +1,60 @@
 /* 工坊提示词 · 工具栏按钮样式（仅影响本插件的提示词优化 / 翻译按钮） */
 .wuji-toolbar {
   position: absolute;
-  top: 40%;
+  top: 6px;
   right: 6px;
-  transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding: 4px;
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(190, 190, 205, 0.4);
+  gap: 4px;
   z-index: 10;
 }
 
 /* 输入框右侧预留空白，避免输入文字与按钮组重叠 */
 .wuji-textarea {
-  padding-right: 82px !important;
+  padding-right: 34px !important;
+}
+
+/* 星星触发图标：默认常驻显示 */
+.wuji-star {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 3px;
+  box-sizing: border-box;
+  border: none;
+  background: transparent;
+  color: #c0c0ca;
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.12s ease;
+}
+
+.wuji-star:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+.wuji-star svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+/* 按钮组：默认隐藏，悬浮到星星时展开 */
+.wuji-menu {
+  display: none;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(190, 190, 205, 0.4);
+}
+
+.wuji-toolbar:hover .wuji-menu {
+  display: inline-flex;
 }
 
 .wuji-btn {
@@ -24,12 +62,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 5px;
+  width: 22px;
+  height: 22px;
+  padding: 4px;
   box-sizing: border-box;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   background: transparent;
   color: #c9c9d4;
   cursor: pointer;
@@ -51,8 +89,8 @@
 }
 
 .wuji-btn svg {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   display: block;
 }
 
@@ -63,8 +101,8 @@
 
 .wuji-btn.wuji-loading::after {
   content: '';
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border: 2px solid rgba(255, 255, 255, 0.25);
   border-top-color: #ffffff;
   border-radius: 50%;
@@ -81,12 +119,12 @@
   top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 6px;
   background: rgba(22, 22, 28, 0.94);
   color: #eeeeee;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.4;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
