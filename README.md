@@ -5,6 +5,8 @@
 ![节点数](https://img.shields.io/badge/节点-5个-purple)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 
+![工坊提示词插件界面预览](./preview.png)
+
 ---
 
 ## 目录
